@@ -87,7 +87,7 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	switch (num_vectors) {
 	case 0:
 		if(first_call){
-			no_line_time = hrt_absolugitte_time();
+			no_line_time = hrt_absolute_time();
 			first_call = false;
 		}else{
 			time_diff = hrt_elapsed_time_atomic(&no_line_time);
