@@ -44,6 +44,8 @@
 #include <string.h>
 #include <math.h>
 
+//Incercam un commit pe branch
+
 uint8_t get_num_vectors(Vector &vec1, Vector &vec2) {
 	uint8_t numVectors = 0;
 	if(!(vec1.m_x0 == 0 && vec1.m_x1 == 0 && vec1.m_y0 == 0 && vec1.m_y1 == 0)) numVectors++;
@@ -103,7 +105,7 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	case 2:
 		first_call = true;
 
-		/* Very simple steering angle calculation, get average of the x of top two points and 
+		/* Very simple steering angle calculation, get average of the x of top two points and
 		   find distance from center of frame */
 		main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1) / 2;
 		control.steer = (float)(main_vec.m_x1 - window_center) / (float)frameWidth;
