@@ -561,6 +561,9 @@ else
 #
 # End of autostart.
 #
+pixy_uorb start
+nxpcup_work start
+commander arm -f
 fi
 
 #
