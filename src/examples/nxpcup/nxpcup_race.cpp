@@ -87,7 +87,7 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	switch (num_vectors) {
 	case 0:
 		if(first_call){
-			no_line_time = hrt_absolute_time();
+			no_line_time = hrt_absolugitte_time();
 			first_call = false;
 		}else{
 			time_diff = hrt_elapsed_time_atomic(&no_line_time);
@@ -103,7 +103,7 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	case 2:
 		first_call = true;
 
-		/* Very simple steering angle calculation, get average of the x of top two points and 
+		/* Very simple steering angle calculation, get average of the x of top two points and
 		   find distance from center of frame */
 		main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1) / 2;
 		control.steer = (float)(main_vec.m_x1 - window_center) / (float)frameWidth;
