@@ -108,6 +108,8 @@ void NxpCupWork::Run()
 
 	motorControl = raceTrack(pixy);
 
+	//motorControl.speed = 0.5f;
+
 	att_sub.update();
 	struct vehicle_attitude_s att = att_sub.get();
 

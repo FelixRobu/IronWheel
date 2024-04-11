@@ -82,8 +82,13 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	hrt_abstime time_diff = 0;
 	static bool first_call = true;
 	uint8_t num_vectors = get_num_vectors(vec1, vec2);
-
-
+	static int timer = 0;
+	if(timer++ == 50)
+	{
+		printf("%d \n", num_vectors);
+		printf("%f \n", (double)control.steer);
+		timer = 0;
+	}
 	switch (num_vectors) {
 	case 0:
 		if(first_call){
@@ -108,10 +113,11 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 		main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1) / 2;
 		control.steer = (float)(main_vec.m_x1 - window_center) / (float)frameWidth;
 
-		control.speed = SPEED_FAST;
+		control.speed = SPEED_NORMAL;
 		break;
 
 	default:
+		//control.speed = SPEED_SLOW;
 		first_call = true;
 		/* Following the main vector */
 		if (vec1.m_x1 > vec1.m_x0) {
@@ -130,6 +136,5 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 		}
 		break;
 	}
-
 	return control;
 }
