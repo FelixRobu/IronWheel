@@ -579,6 +579,7 @@ void RCUpdate::UpdateManualSwitches(const hrt_abstime &timestamp_sample)
 
 void RCUpdate::UpdateManualSetpoint(const hrt_abstime &timestamp_sample)
 {
+#if NOT_CANCEL_RC
 	manual_control_setpoint_s manual_control_setpoint{};
 	manual_control_setpoint.timestamp_sample = timestamp_sample;
 	manual_control_setpoint.data_source = manual_control_setpoint_s::SOURCE_RC;
@@ -603,6 +604,7 @@ void RCUpdate::UpdateManualSetpoint(const hrt_abstime &timestamp_sample)
 
 
 	// populate and publish actuator_controls_3 copied from mapped manual_control_setpoint
+
 	actuator_controls_s actuator_group_3{};
 	actuator_group_3.control[0] = manual_control_setpoint.y;
 	actuator_group_3.control[1] = manual_control_setpoint.x;
@@ -615,6 +617,7 @@ void RCUpdate::UpdateManualSetpoint(const hrt_abstime &timestamp_sample)
 
 	actuator_group_3.timestamp = hrt_absolute_time();
 	_actuator_group_3_pub.publish(actuator_group_3);
+#endif
 }
 
 int RCUpdate::task_spawn(int argc, char *argv[])

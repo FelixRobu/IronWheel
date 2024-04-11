@@ -98,7 +98,7 @@ void NxpCupWork::Run()
 	struct vehicle_control_mode_s _control_mode{};
 
 	_control_mode.flag_control_manual_enabled = false;
-	_control_mode.flag_control_attitude_enabled = true;
+	_control_mode.flag_control_attitude_enabled = false;
 	_control_mode.flag_control_velocity_enabled = false;
 	_control_mode.flag_control_position_enabled = false;
 
@@ -108,19 +108,28 @@ void NxpCupWork::Run()
 
 	motorControl = raceTrack(pixy);
 
-	//motorControl.speed = 0.5f;
-
+#ifdef ATTITUDE_CTRL
+	_control_mode.flag_control_attitude_enabled = true;
 	att_sub.update();
 	struct vehicle_attitude_s att = att_sub.get();
-
 	struct vehicle_attitude_setpoint_s _att_sp{};
-
 	NxpCupWork::roverSteerSpeed(motorControl, _att_sp, att);
-
-	_control_mode.timestamp = hrt_absolute_time();
-	_control_mode_pub.publish(_control_mode);
 	_att_sp.timestamp = hrt_absolute_time();
 	_att_sp_pub.publish(_att_sp);
+#else
+	_control_mode.flag_control_manual_enabled = true;
+	// publish manual_control_setpoint topic
+	manual_control_setpoint_s manual_control_setpoint{};
+	manual_control_setpoint.timestamp_sample = hrt_absolute_time();
+	manual_control_setpoint.data_source = manual_control_setpoint_s::SOURCE_RC;
+	manual_control_setpoint.y     = motorControl.steer;
+	manual_control_setpoint.z     = motorControl.speed;
+
+	manual_control_setpoint.timestamp = hrt_absolute_time();
+	_manual_control_setpoint_pub.publish(manual_control_setpoint);
+#endif
+	_control_mode.timestamp = hrt_absolute_time();
+	_control_mode_pub.publish(_control_mode);
 
 	perf_end(_loop_perf);
 }
@@ -154,10 +163,15 @@ int NxpCupWork::print_status()
 	perf_print_counter(_loop_interval_perf);
 	return 0;
 }
-
+//Exemplu pentru preluare parametri live prin conexiunea de Bluetooth; e.g: nxpcup_work speed 0.14
 int NxpCupWork::custom_command(int argc, char *argv[])
 {
-	return print_usage("unknown command");
+    if(argc==2 && !strcmp(argv[0], "speed")) {
+        double spd = atof(argv[1]);
+        printf("Setting speed to %f\n", spd);
+        return 0;
+    }
+    else return print_usage("unknown command");
 }
 
 int NxpCupWork::print_usage(const char *reason)
