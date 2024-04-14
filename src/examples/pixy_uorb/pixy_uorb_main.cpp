@@ -115,7 +115,7 @@ int pixy_uorb_thread_main(int argc, char **argv)
 				//normalizeVector(pixy);
 				_pixy_vector.timestamp = hrt_absolute_time();
 				_pixy_vector_pub.publish(_pixy_vector);
-
+			}
 
 
 			if (threadShouldExit_uorb) {
