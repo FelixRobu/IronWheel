@@ -83,19 +83,19 @@ Vector copy_vectors(const pixy_vector_s &pixy, uint8_t num) {
 
 roverControl raceTrack(const pixy_vector_s &pixy)
 {
-	//Vector main_vec;
+	Vector main_vec;
 	Vector vec1 = copy_vectors(pixy, 1);
 	Vector vec2 = copy_vectors(pixy, 2);
 
 	//printf("\n#1 %d %d %d %d \n#1 %d %d %d %d \n#2", vec1.m_x0, vec1.m_x1, vec1.m_y0, vec1.m_y1, vec2.m_x0, vec2.m_x1, vec2.m_y0, vec2.m_y1);
-	//uint8_t frameWidth = 79;
-	//uint8_t frameHeight = 52;
-	//int16_t window_center = (frameWidth / 2);
+	uint8_t frameWidth = 79;
+	uint8_t frameHeight = 52;
+	int16_t window_center = (frameWidth / 2);
 	roverControl control{};
-	//float x, y;					 // calc gradient and position of main vector
-	//static hrt_abstime no_line_time = 0;		// time variable for time since no line detected
-	//hrt_abstime time_diff = 0;
-	//static bool first_call = true;
+	float x, y;					 // calc gradient and position of main vector
+	static hrt_abstime no_line_time = 0;		// time variable for time since no line detected
+	hrt_abstime time_diff = 0;
+	static bool first_call = true;
 	uint8_t num_vectors = get_num_vectors(vec1, vec2);
 	// static int timer = 0;
 	// if(timer++ == 50)
@@ -107,6 +107,10 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	//printf("\n#1 %d %d %d %d \n#1 %d %d %d %d \n#2", vec1.m_x0, vec1.m_x1, vec1.m_y0, vec1.m_y1, vec2.m_x0, vec2.m_x1, vec2.m_y0, vec2.m_y1);
 	//static int t = 0;
 	printf("c %f/%f\n", (double)control.speed, (double)control.steer);
+
+
+	printf("v %d/%d/%d/%d %d/%d/%d/%d\n",vec1.m_x0, vec1.m_y0, vec1.m_x1, vec1.m_y1, vec2.m_x0, vec2.m_y0, vec2.m_x1, vec2.m_y1);
+
 	switch (num_vectors) {
 	case 0:
 		if(first_call){
@@ -124,22 +128,14 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 		break;
 
 	case 2:
-		// if(t++ == 30)
-		// {
-		// 	t = 0;
-		// 	printf("\nvect1: %d, %d \t\t %d, %d\nvect2: %d, %d \t\t %d, %d\n",vec1.m_x0, vec1.m_y0, vec1.m_x1, vec1.m_y1, vec2.m_x0, vec2.m_y0, vec2.m_x1, vec2.m_y1);
-		// }
-
-		printf("v %d/%d/%d/%d %d/%d/%d/%d\n",vec1.m_x0, vec1.m_y0, vec1.m_x1, vec1.m_y1, vec2.m_x0, vec2.m_y0, vec2.m_x1, vec2.m_y1);
-
 		first_call = true;
 
-	if(a<30)
-	{
-		control.speed=0.125f;
-		control.steer=0.0f;
+		/* Very simple steering angle calculation, get average of the x of top two points and
+		   find distance from center of frame */
+		main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1) / 2;
+		control.steer = (float)(main_vec.m_x1 - window_center) / (float)frameWidth;
 
-		control.speed = SPEED_SLOW;
+		control.speed = SPEED_NORMAL;
 		break;
 
 	default:
@@ -155,78 +151,13 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 		}
 		if(vec1.m_x0 != vec1.m_x1){
 			control.steer = (-1) * x / y; // Gradient of the main vector
-			control.speed = SPEED_SLOW;
+			control.speed = SPEED_NORMAL;
 		}else{
 			control.steer = 0.0;
 			control.speed = SPEED_SLOW;
 		}
 		break;
 	}
-	else if (a<95)
-	{
-		control.speed=0.125f;
-		control.steer=0.0f;
-	}
-	else if(a<130)
-	{
-		control.speed=0.125f;
-		control.steer=-0.5f;
-	
-	}
-	else
-		a=0;
-
-	a++;
-
-
-
-	// switch (num_vectors) {
-	// case 0:
-	// 	if(first_call){
-	// 		no_line_time = hrt_absolute_time();
-	// 		first_call = false;
-	// 	}else{
-	// 		time_diff = hrt_elapsed_time_atomic(&no_line_time);
-	// 		control.steer = 0.0f;
-	// 		if(time_diff > 10000){
-	// 			/* Stopping if no vector is available */
-	// 			control.steer = 0.0f;
-	// 			control.speed = SPEED_STOP;
-	// 		}
-	// 	}
-	// 	break;
-
-	// case 2:
-	// 	first_call = true;
-
-	// 	/* Very simple steering angle calculation, get average of the x of top two points and
-	// 	   find distance from center of frame */
-	// 	main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1) / 2;
-	// 	control.steer = (float)(main_vec.m_x1 - window_center) / (float)frameWidth;
-
-	// 	control.speed = SPEED_NORMAL;
-	// 	break;
-
-	// default:
-	// 	//control.speed = SPEED_SLOW;
-	// 	first_call = true;
-	// 	/* Following the main vector */
-	// 	if (vec1.m_x1 > vec1.m_x0) {
-	// 		x = (float)(vec1.m_x1 - vec1.m_x0) / (float)frameWidth;
-	// 		y = (float)(vec1.m_y1 - vec1.m_y0) / (float)frameHeight;
-	// 	} else {
-	// 		x = (float)(vec1.m_x0 - vec1.m_x1) / (float)frameWidth;
-	// 		y = (float)(vec1.m_y0 - vec1.m_y1) / (float)frameHeight;
-	// 	}
-	// 	if(vec1.m_x0 != vec1.m_x1){
-	// 		control.steer = (-1) * x / y; // Gradient of the main vector
-	// 		control.speed = SPEED_NORMAL;
-	// 	}else{
-	// 		control.steer = 0.0;
-	// 		control.speed = SPEED_SLOW;
-	// 	}
-	// 	break;
-	// }
 
 	/*
 
