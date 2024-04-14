@@ -136,15 +136,10 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 
 		first_call = true;
 
-	
-	control.speed = SPEED_SLOW;
-	static int var = 0;
-	if(var++ <= 100)
-		control.steer = 1;
-	else if(var++ <= 300)
-		control.steer = 0;
-	else
-		var = 0;
+		/* Very simple steering angle calculation, get average of the x of top two points and
+		   find distance from center of frame */
+		main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1) / 2;
+		control.steer = (float)(main_vec.m_x1 - window_center) / (float)frameWidth;
 
 		control.speed = SPEED_SLOW;
 		break;
