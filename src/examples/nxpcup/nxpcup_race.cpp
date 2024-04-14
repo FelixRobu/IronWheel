@@ -70,6 +70,10 @@ Vector copy_vectors(const pixy_vector_s &pixy, uint8_t num) {
 
 roverControl raceTrack(const pixy_vector_s &pixy)
 {
+
+	//printf("\n#1 %d %d %d %d \n#1 %d %d %d %d \n#2", vec1.m_x0, vec1.m_x1, vec1.m_y0, vec1.m_y1, vec2.m_x0, vec2.m_x1, vec2.m_y0, vec2.m_y1);
+
+
 	//Vector main_vec;
 	//Vector vec1 = copy_vectors(pixy, 1);
 	//Vector vec2 = copy_vectors(pixy, 2);
@@ -90,7 +94,7 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	static int var = 0;
 	if(var++ <= 100)
 		control.steer = 1;
-	else if(var++ <= 200)
+	else if(var++ <= 300)
 		control.steer = 0;
 	else
 		var = 0;
