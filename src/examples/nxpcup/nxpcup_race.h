@@ -43,10 +43,10 @@
 #include <px4_defines.h>
 #include <uORB/topics/pixy_vector.h>
 
-#define SPEED_FAST	0.2f
-#define SPEED_NORMAL	0.15f
-#define SPEED_SLOW	0.1f
-#define SPEED_STOP	0.0f
+#define SPEED_FAST		0.25f
+#define SPEED_NORMAL	0.2f
+#define SPEED_SLOW		0.15f
+#define SPEED_STOP		0.0f
 
 struct roverControl {
 	float steer;
