@@ -89,18 +89,12 @@ int pixy_uorb_thread_main(int argc, char **argv)
 
 		// Loop indefinitely and publish vector data
 		while (1) {
-			pixy.line.getAllFeatures(LINE_VECTOR, wait);		// get line vectors from pixy
-            		if(pixy.line.numVectors) {
-				//int pixyVecLen = pixy.line.numVectors;
-				// for(int i = 0; i < pixyVecLen; ++i)
-				// {
-				// 	printf("\n#1 %d %d %d %d", pixy.line.vectors[i].m_x0, pixy.line.vectors[i].m_x1, pixy.line.vectors[i].m_y0, pixy.line.vectors[i].m_y1);
-				// }
-				// printf("\n#2");
+			if(pixy.line.numVectors) {
 				_pixy_vector.m0_x0 = pixy.line.vectors[0].m_x0;
 				_pixy_vector.m0_x1 = pixy.line.vectors[0].m_x1;
 				_pixy_vector.m0_y0 = pixy.line.vectors[0].m_y0;
 				_pixy_vector.m0_y1 = pixy.line.vectors[0].m_y1;
+				printf("\n#1 %d %d %d %d \n#2", pixy.line.vectors[0].m_x0, pixy.line.vectors[0].m_x1, pixy.line.vectors[0].m_y0, pixy.line.vectors[0].m_y1);
 				if(pixy.line.numVectors > 1) {
 					_pixy_vector.m1_x0 = pixy.line.vectors[1].m_x0;
 					_pixy_vector.m1_x1 = pixy.line.vectors[1].m_x1;
@@ -113,10 +107,22 @@ int pixy_uorb_thread_main(int argc, char **argv)
 					_pixy_vector.m1_y1 = 0;
 				}
 				//normalizeVector(pixy);
-				_pixy_vector.timestamp = hrt_absolute_time();
-				_pixy_vector_pub.publish(_pixy_vector);
+				//_pixy_vector.timestamp = hrt_absolute_time();
+				//_pixy_vector_pub.publish(_pixy_vector);
 			}
-
+			else{
+				_pixy_vector.m0_x0 = 0;
+				_pixy_vector.m0_x1 = 0;
+				_pixy_vector.m0_y0 = 0;
+				_pixy_vector.m0_y1 = 0;
+				
+				_pixy_vector.m1_x0 = 0;
+				_pixy_vector.m1_x1 = 0;
+				_pixy_vector.m1_y0 = 0;
+				_pixy_vector.m1_y1 = 0;
+			}
+			_pixy_vector.timestamp = hrt_absolute_time();
+			_pixy_vector_pub.publish(_pixy_vector);
 
 
 			if (threadShouldExit_uorb) {
