@@ -67,20 +67,20 @@ Vector copy_vectors(const pixy_vector_s &pixy, uint8_t num) {
 		vec.m_y0 = pixy.m1_y0;
 		vec.m_y1 = pixy.m1_y1;
 	}
-	if(vec.m_x0 != 0 && vec.m_x1 != 0 && vec.m_y0 != 0 && vec.m_y1 != 0){
-		float alpha = 0.017;
-		int x = 79 / 2;
-		int x0 = vec.m_x0;
-		int x1 = vec.m_x1;
-		x0 -= x;
-		x1 -= x;
-		x0 /= (1.0f + alpha * vec.m_y0);
-		x1 /= (1.0f + alpha * vec.m_y1);
-		x0 += x;
-		x1 += x;
-		vec.m_x0 = x0;
-		vec.m_x1 = x1;
-	}
+	// if(vec.m_x0 != 0 && vec.m_x1 != 0 && vec.m_y0 != 0 && vec.m_y1 != 0){
+	// 	float alpha = 0.017;
+	// 	int x = 79 / 2;
+	// 	int x0 = vec.m_x0;
+	// 	int x1 = vec.m_x1;
+	// 	x0 -= x;
+	// 	x1 -= x;
+	// 	x0 /= (1.0f + alpha * vec.m_y0);
+	// 	x1 /= (1.0f + alpha * vec.m_y1);
+	// 	x0 += x;
+	// 	x1 += x;
+	// 	vec.m_x0 = x0;
+	// 	vec.m_x1 = x1;
+	// }
 	return vec;
 }
 
@@ -114,7 +114,7 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 		}else{
 			time_diff = hrt_elapsed_time_atomic(&no_line_time);
 			control.steer = 0.0f;
-			if(time_diff > 3000){
+			if(time_diff > 1000){
 				/* Stopping if no vector is available */
 				control.steer = 0.0f;
 				control.speed = SPEED_STOP;
@@ -149,45 +149,45 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 			control.speed = SPEED_NORMAL;
 		}
 		else {
-			control.steer = ((90.0f - angle) / 45.0f); // / 10.0f;
+			control.steer = ((90.0f - angle) / 45.0f) / 10.0f;
 			if(main_vec.m_x1 > main_vec.m_x0)
 				control.steer *= -1.0f;
-			control.speed = SPEED_SLOW; // + (control.steer * (SPEED_NORMAL - SPEED_SLOW));
+			control.speed = SPEED_SLOW + (control.steer * (SPEED_NORMAL - SPEED_SLOW));
 		}
 
 		break;
 	default:
-		// first_call = true;
+		first_call = true;
 
-		// /* Very simple steering angle calculation, get average of the x of top two points and
-		//    find distance from center of frame */
-		// main_vec.m_x0 = vec1.m_x0;
-		// main_vec.m_x1 = vec1.m_x1;
-		// main_vec.m_y0 = vec1.m_y0;
-		// main_vec.m_y1 = vec1.m_y1;
-		// main_vec.m_x1 += window_center - main_vec.m_x0;
-		// main_vec.m_x0 = window_center;
-		// AB = main_vec.m_x0 - main_vec.m_x1;
-		// BC = main_vec.m_y1 - main_vec.m_y0;
-		// angle = atan(AB/BC);
-		// angle *= (180.0f / PI);
-		// printf("\n\n %f \n\n", (double)angle);
-		// if(angle < 45.0f) {
-		// 	control.steer = 1.0f;
-		// 	if(main_vec.m_x1 > main_vec.m_x0)
-		// 		control.steer *= -1.0f;
-		// 	control.speed = SPEED_SLOW;
-		// }
-		// else if(90.0f - angle <= 40.0f) {
-		// 	control.steer = 0.0f;
-		// 	control.speed = SPEED_NORMAL;
-		// }
-		// else {
-		// 	control.steer = ((90.0f - angle) / 45.0f); // / 10.0f;
-		// 	if(main_vec.m_x1 > main_vec.m_x0)
-		// 		control.steer *= -1.0f;
-		// 	control.speed = SPEED_SLOW; // + (control.steer * (SPEED_NORMAL - SPEED_SLOW));
-		// }
+		/* Very simple steering angle calculation, get average of the x of top two points and
+		   find distance from center of frame */
+		main_vec.m_x0 = vec1.m_x0;
+		main_vec.m_x1 = vec1.m_x1;
+		main_vec.m_y0 = vec1.m_y0;
+		main_vec.m_y1 = vec1.m_y1;
+		main_vec.m_x1 += window_center - main_vec.m_x0;
+		main_vec.m_x0 = window_center;
+		AB = main_vec.m_x0 - main_vec.m_x1;
+		BC = main_vec.m_y1 - main_vec.m_y0;
+		angle = atan(AB/BC);
+		angle *= (180.0f / PI);
+		printf("\n\n %f \n\n", (double)angle);
+		if(angle < 45.0f) {
+			control.steer = 1.0f;
+			if(main_vec.m_x1 > main_vec.m_x0)
+				control.steer *= -1.0f;
+			control.speed = SPEED_SLOW;
+		}
+		else if(90.0f - angle <= 40.0f) {
+			control.steer = 0.0f;
+			control.speed = SPEED_NORMAL;
+		}
+		else {
+			control.steer = ((90.0f - angle) / 45.0f) / 10.0f;
+			if(main_vec.m_x1 > main_vec.m_x0)
+				control.steer *= -1.0f;
+			control.speed = SPEED_SLOW + (control.steer * (SPEED_NORMAL - SPEED_SLOW));
+		}
 
 		break;
 	}

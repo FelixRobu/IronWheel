@@ -47,24 +47,24 @@ static int daemon_task;             /* Handle of deamon task / thread */
 bool threadShouldExit_uorb = false;
 bool threadIsRunning_uorb = false;
 
-// void normalizeVector(Pixy2 &pixy)
-// {
-// 	float alpha = 0.2;
-// 	int x = 79 / 2;
-// 	for(uint8_t i = 0; i < pixy.line.numVectors; ++i)
-// 	{
-// 		int x0 = pixy.line.vectors[i].m_x0;
-// 		int x1 = pixy.line.vectors[i].m_x1;
-// 		x0 -= x;
-// 		x1 -= x;
-// 		x0 /= (1.0f + alpha * pixy.line.vectors[i].m_y0);
-// 		x1 /= (1.0f + alpha * pixy.line.vectors[i].m_y1);
-// 		x0 += x;
-// 		x1 += x;
-// 		pixy.line.vectors[i].m_x0 = x0;
-// 		pixy.line.vectors[i].m_x1 = x1;
-// 	}
-// }
+void normalizeVector(Pixy2 &pixy)
+{
+	float alpha = 0.017;
+	int x = 79 / 2;
+	for(uint8_t i = 0; i < pixy.line.numVectors; ++i)
+	{
+		int x0 = pixy.line.vectors[i].m_x0;
+		int x1 = pixy.line.vectors[i].m_x1;
+		x0 -= x;
+		x1 -= x;
+		x0 /= (1.0f + alpha * pixy.line.vectors[i].m_y0);
+		x1 /= (1.0f + alpha * pixy.line.vectors[i].m_y1);
+		x0 += x;
+		x1 += x;
+		pixy.line.vectors[i].m_x0 = x0;
+		pixy.line.vectors[i].m_x1 = x1;
+	}
+}
 
 int pixy_uorb_thread_main(int argc, char **argv)
 {
@@ -90,6 +90,7 @@ int pixy_uorb_thread_main(int argc, char **argv)
 		// Loop indefinitely and publish vector data
 		while (1) {
 			pixy.line.getAllFeatures(LINE_VECTOR, wait);		// get line vectors from pixy
+			normalizeVector(pixy);
 			if(pixy.line.numVectors) {
 				_pixy_vector.m0_x0 = pixy.line.vectors[0].m_x0;
 				_pixy_vector.m0_x1 = pixy.line.vectors[0].m_x1;
