@@ -89,6 +89,8 @@ int pixy_uorb_thread_main(int argc, char **argv)
 
 		// Loop indefinitely and publish vector data
 		while (1) {
+
+			pixy.line.getAllFeatures(LINE_VECTOR,wait);
 			if(pixy.line.numVectors) {
 				_pixy_vector.m0_x0 = pixy.line.vectors[0].m_x0;
 				_pixy_vector.m0_x1 = pixy.line.vectors[0].m_x1;
