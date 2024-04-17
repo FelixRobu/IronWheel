@@ -91,9 +91,9 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	int16_t window_center = (frameWidth / 2);
 	roverControl control{};
 	//float x, y;					 // calc gradient and position of main vector
-	//static hrt_abstime no_line_time = 0;		// time variable for time since no line detected
-	//hrt_abstime time_diff = 0;
-	//static bool first_call = true;
+	static hrt_abstime no_line_time = 0;		// time variable for time since no line detected
+	hrt_abstime time_diff = 0;
+	static bool first_call = true;
 	uint8_t num_vectors = get_num_vectors(vec1, vec2);
 	printf("c %f/%f\n", (double)control.speed, (double)control.steer);
 
@@ -116,19 +116,53 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	// 	vec2=aux;
 	// }
 
-
-	if(num_vectors==2)
+	switch (num_vectors)
 	{
+	case 0:
+	
+		if(first_call){
+			no_line_time = hrt_absolute_time();
+			first_call = false;
+		}else{
+			time_diff = hrt_elapsed_time_atomic(&no_line_time);
+			control.steer = 0.0f;
+			if(time_diff > 1000){
+				/* Stopping if no vector is available */
+				control.steer = 0.0f;
+				control.speed = SPEED_STOP;
+				}
+			}
+		break;
+	
+	case 1:
+
+	first_call = true;
+		if(vec1.m_x0 < window_center)
+		{
+			control.speed=SPEED_NORMAL;   //la dreapta
+			control.steer=-0.6f;    //era  0.4f 
+		}
+		else
+		{
+			control.speed=SPEED_NORMAL;   //la dreapta
+			control.steer=0.6f;    
+		}
+		
+
+		break;
+
+	case 2:
+		first_call = true;
 		if(abs(vec1Length-vec2Length)>eps)
 			{
 				if(vec1Length>vec2Length)
 				{
-					control.speed=0.08f;  //STOP
+					control.speed=SPEED_NORMAL;  //STOP
 					control.steer=-0.6f;
 				}
 				else
 				{
-					control.speed=0.08f;  //STOP
+					control.speed=SPEED_NORMAL;  //STOP
 					control.steer=0.6f;
 				}
 				return control;
@@ -142,36 +176,20 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 			{
 				if(vec1.m_x1>= window_center)
 					{
-						control.speed=0.1f;   //la stanga   
-						control.steer=0.6f;
+						control.speed=SPEED_SLOW;   //la stanga   
+						control.steer=0.3f;   //0.6
 					}
 				else
 					{
-						control.speed=0.1f;   //la dreapta
-						control.steer=-0.6f;
-					}
+						control.speed=SPEED_SLOW;   //la dreapta
+						control.steer=-0.3f;   //0.6
+					} 
 			}
-	}
-	else
-	{
-		if(vec1.m_x1 < window_center)
-		{
-			control.speed=SPEED_NORMAL;   //la dreapta
-			control.steer=-0.4f;
-		}
-		else
-		{
-			control.speed=SPEED_NORMAL;   //la dreapta
-			control.steer=0.4f;
-		}
-		
+		break;
 	}
 
-	if(num_vectors==0)
-		{
-			control.speed=SPEED_STOP; 
-			control.steer=0.0f;
-		}
+	//main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1) / 2;
+	//control.steer = (float)(main_vec.m_x1 - window_center) / (float)frameWidth;
 
 	return control;
 }
