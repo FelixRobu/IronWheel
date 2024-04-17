@@ -96,11 +96,6 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 	static bool first_call = true;
 	uint8_t num_vectors = get_num_vectors(vec1, vec2);
 	printf("c %f/%f\n", (double)control.speed, (double)control.steer);
-<<<<<<< HEAD
-	printf("v %d/%d/%d/%d %d/%d/%d/%d\n",vec1.m_x0, vec1.m_y0, vec1.m_x1, vec1.m_y1, vec2.m_x0, vec2.m_y0, vec2.m_x1, vec2.m_y1);
-	
-	switch (num_vectors) {
-=======
 
 	printf("v %d/%d/%d/%d %d/%d/%d/%d\n",vec1.m_x0, vec1.m_y0, vec1.m_x1, vec1.m_y1, vec2.m_x0, vec2.m_y0, vec2.m_x1, vec2.m_y1);
 
@@ -123,7 +118,6 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 
 	switch (num_vectors)
 	{
->>>>>>> felix
 	case 0:
 	
 		if(first_call){
@@ -158,16 +152,6 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 		break;
 
 	case 2:
-<<<<<<< HEAD
-		// if(t++ == 30)
-		// {
-		// 	t = 0;
-		// 	printf("\nvect1: %d, %d \t\t %d, %d\nvect2: %d, %d \t\t %d, %d\n",vec1.m_x0, vec1.m_y0, vec1.m_x1, vec1.m_y1, vec2.m_x0, vec2.m_y0, vec2.m_x1, vec2.m_y1);
-		// }
-
-
-=======
->>>>>>> felix
 		first_call = true;
 		if(abs(vec1Length-vec2Length)>eps)
 			{
